@@ -467,6 +467,24 @@
             margin-bottom: 6px;
         }
 
+        /* QR Code Section */
+        .qr-section {
+            text-align: center;
+            margin-bottom: 10px;
+        }
+
+        .qr-section #qrcode {
+            display: flex;
+            justify-content: center;
+            margin-top: 16px;
+        }
+
+        .qr-section #qrcode canvas {
+            border: 8px solid white;
+            border-radius: 12px;
+            box-shadow: 0 4px 16px rgba(184, 134, 11, 0.12);
+        }
+
         /* Responsive */
         @media (max-width: 480px) {
             .container {
@@ -700,6 +718,19 @@
         </form>
     </div>
 
+    <!-- QR Code Section -->
+    <div class="divider">
+        <span class="divider-line"></span>
+        <span class="divider-icon">&#10047;</span>
+        <span class="divider-line"></span>
+    </div>
+
+    <div class="qr-section">
+        <h2 class="section-title">Share This Invitation</h2>
+        <p class="section-subtitle">Scan the QR code to open this RSVP page</p>
+        <div id="qrcode"></div>
+    </div>
+
     <!-- Footer -->
     <div class="footer">
         <div class="hearts">&#10084; &#10084; &#10084;</div>
@@ -709,7 +740,18 @@
 
 </div>
 
+<script src="https://cdn.jsdelivr.net/npm/qrcodejs@1.0.0/qrcode.min.js"></script>
 <script>
+    // Generate QR code pointing to this page
+    new QRCode(document.getElementById("qrcode"), {
+        text: window.location.href,
+        width: 200,
+        height: 200,
+        colorDark: "#2d5016",
+        colorLight: "#ffffff",
+        correctLevel: QRCode.CorrectLevel.H
+    });
+
     function toggleCheck(label) {
         const checkbox = label.querySelector('input[type="checkbox"]');
         checkbox.checked = !checkbox.checked;
