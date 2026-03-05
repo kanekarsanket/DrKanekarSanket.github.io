@@ -1,0 +1,386 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Nashik - The Wine Capital of India</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            color: #333;
+        }
+
+        header {
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+            color: white;
+            padding: 80px 20px;
+            text-align: center;
+        }
+
+        header h1 {
+            font-size: 3.5rem;
+            margin-bottom: 10px;
+            letter-spacing: 2px;
+        }
+
+        header p {
+            font-size: 1.3rem;
+            opacity: 0.9;
+        }
+
+        nav {
+            background: #0f3460;
+            padding: 15px;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        nav ul {
+            list-style: none;
+            display: flex;
+            justify-content: center;
+            flex-wrap: wrap;
+            gap: 30px;
+        }
+
+        nav a {
+            color: white;
+            text-decoration: none;
+            font-weight: 500;
+            transition: color 0.3s;
+        }
+
+        nav a:hover {
+            color: #e94560;
+        }
+
+        section {
+            padding: 60px 20px;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        h2 {
+            text-align: center;
+            font-size: 2.5rem;
+            margin-bottom: 40px;
+            color: #1a1a2e;
+            position: relative;
+        }
+
+        h2::after {
+            content: '';
+            display: block;
+            width: 60px;
+            height: 4px;
+            background: #e94560;
+            margin: 15px auto 0;
+        }
+
+        .hero {
+            background: url('https://images.unsplash.com/photo-1565967511849-76a60a516170?w=1200') center/cover;
+            height: 400px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.7);
+        }
+
+        .hero h2 {
+            font-size: 3rem;
+            color: white;
+        }
+
+        .about {
+            background: #f8f9fa;
+        }
+
+        .about p {
+            font-size: 1.1rem;
+            max-width: 800px;
+            margin: 0 auto 20px;
+            text-align: center;
+        }
+
+        .highlights {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 30px;
+            margin-top: 40px;
+        }
+
+        .card {
+            background: white;
+            border-radius: 15px;
+            overflow: hidden;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            transition: transform 0.3s;
+        }
+
+        .card:hover {
+            transform: translateY(-10px);
+        }
+
+        .card img {
+            width: 100%;
+            height: 200px;
+            object-fit: cover;
+        }
+
+        .card-content {
+            padding: 25px;
+        }
+
+        .card h3 {
+            color: #1a1a2e;
+            margin-bottom: 10px;
+        }
+
+        .card p {
+            color: #666;
+            font-size: 0.95rem;
+        }
+
+        .things-to-do {
+            background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+        }
+
+        .activity-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 25px;
+        }
+
+        .activity {
+            background: white;
+            padding: 30px;
+            border-radius: 15px;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.08);
+            border-left: 4px solid #e94560;
+        }
+
+        .activity h3 {
+            color: #1a1a2e;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .activity p {
+            color: #555;
+        }
+
+        .food {
+            background: #1a1a2e;
+            color: white;
+        }
+
+        .food h2 {
+            color: white;
+        }
+
+        .food-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 25px;
+        }
+
+        .food-card {
+            background: #16213e;
+            padding: 25px;
+            border-radius: 15px;
+            text-align: center;
+            transition: transform 0.3s;
+        }
+
+        .food-card:hover {
+            transform: scale(1.05);
+        }
+
+        .food-card h3 {
+            color: #e94560;
+            margin-bottom: 8px;
+        }
+
+        .food-card p {
+            color: #ccc;
+            font-size: 0.9rem;
+        }
+
+        .food-card .specialty {
+            display: inline-block;
+            background: #e94560;
+            color: white;
+            padding: 5px 15px;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            margin-top: 10px;
+        }
+
+        footer {
+            background: #0f3460;
+            color: white;
+            text-align: center;
+            padding: 30px;
+        }
+
+        @media (max-width: 768px) {
+            header h1 {
+                font-size: 2.5rem;
+            }
+            h2 {
+                font-size: 2rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>Nashik</h1>
+        <p>The Wine Capital of India | City of Rivers & Temples</p>
+    </header>
+
+    <nav>
+        <ul>
+            <li><a href="#about">About</a></li>
+            <li><a href="#beauty">City Beauty</a></li>
+            <li><a href="#things-to-do">Things to Do</a></li>
+            <li><a href="#food">Food Spots</a></li>
+        </ul>
+    </nav>
+
+    <div class="hero">
+        <h2>Welcome to Nashik</h2>
+    </div>
+
+    <section id="about" class="about">
+        <h2>About Nashik</h2>
+        <p>Nashik is a vibrant city in Maharashtra, India, situated at the foothills of the Western Ghats. Known as the "Wine Capital of India," it boasts a perfect blend of ancient heritage, natural beauty, and modern development.</p>
+        <p>Home to the sacred Kumbh Mela site and over 100 temples, Nashik offers spiritual seekers a profound experience. The city's vineyards have put India on the global wine map, while its rich history dates back to the Ramayana era.</p>
+    </section>
+
+    <section id="beauty">
+        <h2>City Beauty</h2>
+        <div class="highlights">
+            <div class="card">
+                <img src="https://images.unsplash.com/photo-1583416750470-965b2707b355?w=600" alt="Vineyards">
+                <div class="card-content">
+                    <h3>Vineyards & Wine Tours</h3>
+                    <p>Nashik is India's largest wine producer. Visit Sula Vineyards, York Winery, and Soma Vine Village for scenic tours and wine tasting experiences amidst rolling hills.</p>
+                </div>
+            </div>
+            <div class="card">
+                <img src="https://images.unsplash.com/photo-1602002418082-a4443e081dd1?w=600" alt="Godavari River">
+                <div class="card-content">
+                    <h3>Godavari River</h3>
+                    <p>The sacred Godavari River flows through Nashik, offering serene ghats, morning walks, and boat rides. The Trimbakeshwar Temple sits at its source.</p>
+                </div>
+            </div>
+            <div class="card">
+                <img src="https://images.unsplash.com/photo-1604329760661-e71dc83f8f26?w=600" alt="Temples">
+                <div class="card-content">
+                    <h3>Ancient Temples</h3>
+                    <p>Nashik houses over 100 temples including the famous Kalaram Temple, Kapaleshwar Temple, and the Panchavati area mentioned in the Ramayana.</p>
+                </div>
+            </div>
+            <div class="card">
+                <img src="https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=600" alt="Western Ghats">
+                <div class="card-content">
+                    <h3>Western Ghats</h3>
+                    <p>Surrounded by the stunning Western Ghats, Nashik offers trekking spots like Anjaneri Fort and stunning viewpoints for nature lovers.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section id="things-to-do" class="things-to-do">
+        <h2>Things to Do</h2>
+        <div class="activity-grid">
+            <div class="activity">
+                <h3>🍷 Wine Tasting</h3>
+                <p>Visit Sula Vineyards for wine tours, tasting sessions, and enjoy the grape festival. York Winery offers sunset views with wine.</p>
+            </div>
+            <div class="activity">
+                <h3>🛕 Temple Pilgrimage</h3>
+                <p>Explore Panchavati, Kalaram Temple, and Brahmagiri Hill. Take a holy dip at Ram Kund and visit the ancient Sita Gufa caves.</p>
+            </div>
+            <div class="activity">
+                <h3>🚶 Trekking</h3>
+                <p>Trek to Anjaneri Fort, Dhodap Fort, or the Pandavleni Caves. The Western Ghats offer trails for all adventure levels.</p>
+            </div>
+            <div class="activity">
+                <h3>🛶 River Activities</h3>
+                <p>Enjoy boating at Godavari ghats, especially during evenings. Visit the Nashik Epressway for scenic drives along the river.</p>
+            </div>
+            <div class="activity">
+                <h3>🎭 Culture & History</h3>
+                <p>Visit the Nashik Museum, explore British-era architecture, and experience the famous Nashik Fobia festival.</p>
+            </div>
+            <div class="activity">
+                <h3>🛍️ Shopping</h3>
+                <p>Explore MG Road, Satpur Main Road for shopping. Don't miss Nashik's famous grapes, wine, and handcrafted items.</p>
+            </div>
+        </div>
+    </section>
+
+    <section id="food" class="food">
+        <h2>Favorite Food Spots</h2>
+        <div class="food-grid">
+            <div class="food-card">
+                <h3>Hotel Panchavati</h3>
+                <p>Legendary veg restaurant since 1964</p>
+                <span class="specialty">Puran Poli, Thali</span>
+            </div>
+            <div class="food-card">
+                <h3>Sula Restaurant</h3>
+                <p>Fine dining with vineyard views</p>
+                <span class="specialty">Continental, Wine Pairing</span>
+            </div>
+            <div class="food-card">
+                <h3>Chaat House</h3>
+                <p>Famous street food destination</p>
+                <span class="specialty">Pani Puri, Bhel Puri</span>
+            </div>
+            <div class="food-card">
+                <h3>Maharaja Bhog</h3>
+                <p>Authentic Rajasthani thali</p>
+                <span class="specialty">Dal Baati Churma</span>
+            </div>
+            <div class="food-card">
+                <h3>Shabree Restaurant</h3>
+                <p>Popular for North Indian cuisine</p>
+                <span class="specialty">Tandoori Dishes, Biryani</span>
+            </div>
+            <div class="food-card">
+                <h3>Grapes Kitchen</h3>
+                <p>Multi-cuisine family restaurant</p>
+                <span class="specialty">Indian, Chinese</span>
+            </div>
+            <div class="food-card">
+                <h3>Kalinga Restaurant</h3>
+                <p>South Indian specialization</p>
+                <span class="specialty">Dosa, Idli, Vada</span>
+            </div>
+            <div class="food-card">
+                <h3>The Old House</h3>
+                <p>Cozy cafe with desserts</p>
+                <span class="specialty">Coffee, Pastries</span>
+            </div>
+        </div>
+    </section>
+
+    <footer>
+        <p>Discover Nashik - Where History Meets Modernity</p>
+    </footer>
+</body>
+</html>
