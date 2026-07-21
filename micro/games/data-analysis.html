@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Data Analysis Toolkit</title>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+body { font-family: Arial, Helvetica, sans-serif; background: #0a0a0a; color: #fff; min-height: 100vh; }
+header { background: #000; border-bottom: 4px solid #D4A843; padding: 1.25rem 1.5rem; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 0.5rem; }
+header h1 { font-size: 1.2rem; color: #D4A843; }
+header a { color: #D4A843; text-decoration: none; font-size: 0.85rem; border: 1px solid #D4A843; padding: 0.35rem 0.75rem; border-radius: 6px; transition: background 0.2s; }
+header a:hover { background: #D4A843; color: #000; }
+.container { max-width: 960px; margin: 0 auto; padding: 1.5rem 1rem; }
+.panel { background: #151515; border: 1px solid #2a2a2a; border-radius: 12px; padding: 1.5rem; margin-bottom: 1.25rem; }
+.panel h3 { color: #D4A843; font-size: 0.9rem; margin-bottom: 0.85rem; text-transform: uppercase; letter-spacing: 1px; }
+textarea { width: 100%; min-height: 140px; background: #0a0a0a; border: 1px solid #2a2a2a; color: #fff; padding: 0.75rem; border-radius: 8px; font-family: 'Courier New', monospace; font-size: 0.9rem; resize: vertical; }
+textarea:focus { outline: none; border-color: #D4A843; }
+.btn-row { display: flex; gap: 0.75rem; margin-top: 0.85rem; flex-wrap: wrap; }
+button.primary { background: #D4A843; color: #000; font-weight: 700; border: none; border-radius: 8px; padding: 0.65rem 1.25rem; cursor: pointer; font-size: 0.9rem; }
+button.primary:hover { background: #e6bb52; }
+button.secondary { background: transparent; color: #D4A843; border: 1px solid #D4A843; border-radius: 8px; padding: 0.65rem 1.25rem; cursor: pointer; font-size: 0.9rem; }
+.stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(130px, 1fr)); gap: 1rem; margin-top: 0.5rem; }
+.stat-box { background: #0a0a0a; border: 1px solid #2a2a2a; border-radius: 10px; padding: 0.85rem; text-align: center; }
+.stat-box .label { font-size: 0.68rem; text-transform: uppercase; letter-spacing: 1px; color: #999; margin-bottom: 0.3rem; }
+.stat-box .value { font-size: 1.25rem; font-weight: 700; color: #D4A843; word-break: break-word; }
+.chart-wrap { background: #0a0a0a; border: 1px solid #2a2a2a; border-radius: 10px; padding: 1rem; margin-top: 1rem; position: relative; }
+canvas#dataChart { width: 100% !important; max-height: 380px; }
+.error-msg { color: #f44336; font-size: 0.85rem; margin-top: 0.75rem; display: none; }
+.note { font-size: 0.78rem; color: #888; margin-top: 0.6rem; line-height: 1.5; }
+</style>
+</head>
+<body>
+<header>
+  <h1>Data Analysis Toolkit</h1>
+  <a href="../index.html">Back to Games</a>
+</header>
+<div class="container">
+  <div class="panel">
+    <h3>Input Data</h3>
+    <textarea id="dataInput" placeholder="One number per line for descriptive stats:&#10;12&#10;15&#10;9&#10;21&#10;&#10;Or paired x,y values per line for correlation and regression:&#10;5,120&#10;7,110&#10;9,95"></textarea>
+    <div class="btn-row">
+      <button class="primary" id="analyzeBtn">Analyze</button>
+      <button class="secondary" id="sampleBtn">Load Sample (Price vs Quantity)</button>
+      <button class="secondary" id="clearBtn">Clear</button>
+    </div>
+    <div class="error-msg" id="errorMsg"></div>
+    <p class="note">Paste a single column of numbers for descriptive statistics, or two comma-separated columns per line to also compute correlation and a linear regression line, useful for exploring relationships like price and quantity demanded.</p>
+  </div>
+  <div class="panel" id="resultsPanel" style="display: none;">
+    <h3>Results</h3>
+    <div class="stats-grid" id="statsGrid"></div>
+    <div class="chart-wrap"><canvas id="dataChart"></canvas></div>
+  </div>
+</div>
+<script>
+let chartInstance = null;
+function mean(arr) { return arr.reduce(function(a, b) { return a + b; }, 0) / arr.length; }
+function median(arr) { const s = arr.slice().sort(function(a, b) { return a - b; }); const mid = Math.floor(s.length / 2); return s.length % 2 !== 0 ? s[mid] : (s[mid - 1] + s[mid]) / 2; }
+function mode(arr) {
+  const freq = {}; arr.forEach(function(v) { freq[v] = (freq[v] || 0) + 1; });
+  let maxFreq = 0, modes = [];
+  Object.keys(freq).forEach(function(k) { if (freq[k] > maxFreq) { maxFreq = freq[k]; modes = [k]; } else if (freq[k] === maxFreq) { modes.push(k); } });
+  if (modes.length === Object.keys(freq).length) return 'None';
+  return modes.join(', ');
+}
+function stdDev(arr, m) { const v = arr.reduce(function(a, b) { return a + Math.pow(b - m, 2); }, 0) / (arr.length - 1); return Math.sqrt(v); }
+function round(n, d) { d = (d === undefined) ? 3 : d; return Math.round(n * Math.pow(10, d)) / Math.pow(10, d); }
+function statBox(label, value) { return '<div class="stat-box"><div class="label">' + label + '</div><div class="value">' + value + '</div></div>'; }
+function parseData(text) {
+  const lines = text.split('\n').map(function(l) { return l.trim(); }).filter(function(l) { return l.length > 0; });
+  if (lines.length === 0) return null;
+  const pairMode = lines.every(function(l) { return l.indexOf(',') !== -1; });
+  if (pairMode) {
+    const pairs = lines.map(function(l) { return l.split(',').map(function(v) { return parseFloat(v.trim()); }); });
+    if (pairs.some(function(p) { return p.length !== 2 || p.some(isNaN); })) return { error: true };
+    return { type: 'pair', data: pairs };
+  }
+  const nums = lines.map(function(l) { return parseFloat(l); });
+  if (nums.some(isNaN)) return { error: true };
+  return { type: 'single', data: nums };
+}
+function renderChart(config) {
+  if (chartInstance) chartInstance.destroy();
+  const ctx = document.getElementById('dataChart').getContext('2d');
+  Chart.defaults.color = '#ccc';
+  chartInstance = new Chart(ctx, config);
+}
+function analyze() {
+  const raw = document.getElementById('dataInput').value;
+  const errorEl = document.getElementById('errorMsg');
+  errorEl.style.display = 'none';
+  const parsed = parseData(raw);
+  if (!parsed || parsed.error) {
+    errorEl.textContent = 'Could not read the data. Enter one number per line, or comma-separated x,y pairs per line.';
+    errorEl.style.display = 'block';
+    document.getElementById('resultsPanel').style.display = 'none';
+    return;
+  }
+  document.getElementById('resultsPanel').style.display = 'block';
+  const grid = document.getElementById('statsGrid');
+  if (parsed.type === 'single') {
+    const arr = parsed.data, m = mean(arr), sd = arr.length > 1 ? stdDev(arr, m) : 0;
+    grid.innerHTML = statBox('Count', arr.length) + statBox('Mean', round(m)) + statBox('Median', round(median(arr))) + statBox('Mode', mode(arr)) + statBox('Min', Math.min.apply(null, arr)) + statBox('Max', Math.max.apply(null, arr)) + statBox('Range', round(Math.max.apply(null, arr) - Math.min.apply(null, arr))) + statBox('Sample Std Dev', round(sd)) + statBox('Sample Variance', round(sd * sd));
+    renderChart({ type: 'bar', data: { labels: arr.map(function(_, i) { return 'Obs ' + (i + 1); }), datasets: [{ label: 'Value', data: arr, backgroundColor: '#D4A843' }] }, options: { plugins: { legend: { labels: { color: '#ccc' } } }, scales: { x: { grid: { color: '#222' } }, y: { grid: { color: '#222' } } } } });
+  } else {
+    const xs = parsed.data.map(function(p) { return p[0]; }), ys = parsed.data.map(function(p) { return p[1]; }), n = xs.length;
+    const mx = mean(xs), my = mean(ys);
+    let sxy = 0, sxx = 0, syy = 0;
+    for (let i = 0; i < n; i++) { sxy += (xs[i] - mx) * (ys[i] - my); sxx += Math.pow(xs[i] - mx, 2); syy += Math.pow(ys[i] - my, 2); }
+    const slope = sxy / sxx, intercept = my - slope * mx, r = sxy / Math.sqrt(sxx * syy), r2 = r * r;
+    const eq = 'y = ' + round(slope) + 'x ' + (intercept >= 0 ? '+ ' + round(intercept) : '- ' + round(Math.abs(intercept)));
+    grid.innerHTML = statBox('N (pairs)', n) + statBox('Mean X', round(mx)) + statBox('Mean Y', round(my)) + statBox('Correlation r', round(r)) + statBox('Slope', round(slope)) + statBox('Intercept', round(intercept)) + statBox('R-squared', round(r2)) + statBox('Equation', eq);
+    const minX = Math.min.apply(null, xs), maxX = Math.max.apply(null, xs);
+    renderChart({ type: 'scatter', data: { datasets: [{ label: 'Data', data: parsed.data.map(function(p) { return { x: p[0], y: p[1] }; }), backgroundColor: '#D4A843' }, { label: 'Regression Line', type: 'line', data: [{ x: minX, y: slope * minX + intercept }, { x: maxX, y: slope * maxX + intercept }], borderColor: '#4caf50', backgroundColor: '#4caf50', pointRadius: 0, fill: false }] }, options: { plugins: { legend: { labels: { color: '#ccc' } } }, scales: { x: { type: 'linear', grid: { color: '#222' } }, y: { grid: { color: '#222' } } } } });
+  }
+}
+document.getElementById('analyzeBtn').addEventListener('click', analyze);
+document.getElementById('clearBtn').addEventListener('click', function() { document.getElementById('dataInput').value = ''; document.getElementById('resultsPanel').style.display = 'none'; document.getElementById('errorMsg').style.display = 'none'; });
+document.getElementById('sampleBtn').addEventListener('click', function() { document.getElementById('dataInput').value = '2,95\n4,88\n6,80\n8,74\n10,66\n12,60\n14,51\n16,45\n18,38\n20,30'; analyze(); });
+</script>
+</body>
+</html>
