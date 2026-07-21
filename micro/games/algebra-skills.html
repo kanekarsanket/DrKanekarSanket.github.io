@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Algebra & Math Skills for Economics</title>
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+body { font-family: Arial, Helvetica, sans-serif; background: #0a0a0a; color: #fff; min-height: 100vh; }
+header { background: #000; border-bottom: 4px solid #D4A843; padding: 1.25rem 1.5rem; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 0.5rem; }
+header h1 { font-size: 1.2rem; color: #D4A843; }
+header a { color: #D4A843; text-decoration: none; font-size: 0.85rem; border: 1px solid #D4A843; padding: 0.35rem 0.75rem; border-radius: 6px; transition: background 0.2s; }
+header a:hover { background: #D4A843; color: #000; }
+.container { max-width: 720px; margin: 0 auto; padding: 1.5rem 1rem; }
+.score-bar { display: flex; gap: 1rem; margin-bottom: 1.25rem; flex-wrap: wrap; }
+.score-box { flex: 1; min-width: 120px; background: #151515; border: 1px solid #2a2a2a; border-radius: 10px; padding: 1rem; text-align: center; }
+.score-box .label { font-size: 0.7rem; text-transform: uppercase; letter-spacing: 1px; color: #999; margin-bottom: 0.35rem; }
+.score-box .value { font-size: 1.6rem; font-weight: 700; color: #D4A843; }
+.tabs { display: flex; gap: 0.5rem; margin-bottom: 1.25rem; flex-wrap: wrap; }
+.tab-btn { flex: 1; min-width: 140px; background: #151515; border: 1px solid #2a2a2a; color: #ccc; padding: 0.6rem 0.75rem; border-radius: 8px; cursor: pointer; font-size: 0.8rem; font-weight: 600; transition: border-color 0.2s, color 0.2s; }
+.tab-btn.active { border-color: #D4A843; color: #D4A843; }
+.panel { background: #151515; border: 1px solid #2a2a2a; border-radius: 12px; padding: 1.5rem; margin-bottom: 1.25rem; }
+.panel h3 { color: #D4A843; font-size: 0.95rem; margin-bottom: 1rem; text-transform: uppercase; letter-spacing: 1px; }
+.question { font-size: 1.15rem; margin-bottom: 1.25rem; line-height: 1.6; }
+.answer-row { display: flex; gap: 0.75rem; flex-wrap: wrap; align-items: center; }
+input[type="text"] { flex: 1; min-width: 160px; background: #0a0a0a; border: 1px solid #2a2a2a; color: #fff; padding: 0.65rem 0.85rem; border-radius: 8px; font-size: 1rem; }
+input[type="text"]:focus { outline: none; border-color: #D4A843; }
+button.primary { background: #D4A843; color: #000; font-weight: 700; border: none; border-radius: 8px; padding: 0.65rem 1.25rem; cursor: pointer; font-size: 0.9rem; }
+button.primary:hover { background: #e6bb52; }
+button.secondary { background: transparent; color: #D4A843; border: 1px solid #D4A843; border-radius: 8px; padding: 0.65rem 1.25rem; cursor: pointer; font-size: 0.9rem; }
+.feedback { margin-top: 1rem; font-weight: 600; padding: 0.75rem 1rem; border-radius: 8px; display: none; }
+.feedback.correct { background: rgba(76,175,80,0.15); color: #4caf50; display: block; }
+.feedback.incorrect { background: rgba(244,67,54,0.15); color: #f44336; display: block; }
+.hint { font-size: 0.8rem; color: #888; margin-top: 0.75rem; }
+</style>
+</head>
+<body>
+<header>
+  <h1>Algebra & Math Skills for Economics</h1>
+  <a href="../index.html">Back to Games</a>
+</header>
+<div class="container">
+  <div class="score-bar">
+    <div class="score-box"><div class="label">Correct</div><div class="value" id="correctCount">0</div></div>
+    <div class="score-box"><div class="label">Attempted</div><div class="value" id="attemptCount">0</div></div>
+    <div class="score-box"><div class="label">Accuracy</div><div class="value" id="accuracy">0%</div></div>
+  </div>
+  <div class="tabs">
+    <button class="tab-btn active" data-topic="linear">Linear Equations</button>
+    <button class="tab-btn" data-topic="slope">Slope &amp; Intercept</button>
+    <button class="tab-btn" data-topic="percent">Percent Change</button>
+  </div>
+  <div class="panel">
+    <h3 id="topicTitle">Solve for X</h3>
+    <div class="question" id="questionText">Loading...</div>
+    <div class="answer-row">
+      <input type="text" id="answerInput" placeholder="Your answer" autocomplete="off">
+      <button class="primary" id="checkBtn">Check</button>
+      <button class="secondary" id="nextBtn">New Question</button>
+    </div>
+    <div class="feedback" id="feedback"></div>
+    <div class="hint" id="hintText"></div>
+  </div>
+</div>
+<script>
+let correct = 0, attempted = 0, currentTopic = 'linear', currentAnswer = 0, tolerance = 0.01;
+const topicTitles = { linear: 'Solve for X', slope: 'Slope & Intercept (Supply/Demand Lines)', percent: 'Percent Change & Growth Rates' };
+function rand(min, max) { return Math.floor(Math.random() * (max - min + 1)) + min; }
+function genLinear() {
+  const a = rand(2, 9), x = rand(-10, 10), b = rand(-15, 15), c = a * x + b;
+  const bStr = b >= 0 ? ('+ ' + b) : ('- ' + Math.abs(b));
+  document.getElementById('questionText').textContent = 'Solve for x:  ' + a + 'x ' + bStr + ' = ' + c;
+  document.getElementById('hintText').textContent = 'Move the constant to the other side, then divide by the coefficient of x.';
+  currentAnswer = x; tolerance = 0.01;
+}
+function genSlope() {
+  const bCoef = rand(1, 5), aCoef = rand(50, 150);
+  if (rand(0, 1) === 0) {
+    const P = rand(2, 20), Qd = aCoef - bCoef * P;
+    document.getElementById('questionText').textContent = 'Given the demand function Qd = ' + aCoef + ' - ' + bCoef + 'P, what is Qd when P = ' + P + '?';
+    document.getElementById('hintText').textContent = 'Substitute P into the equation and simplify.';
+    currentAnswer = Qd;
+  } else {
+    document.getElementById('questionText').textContent = 'Given the demand function Qd = ' + aCoef + ' - ' + bCoef + 'P, what is the slope with respect to P?';
+    document.getElementById('hintText').textContent = 'The slope is the coefficient on P (keep the negative sign).';
+    currentAnswer = -bCoef;
+  }
+  tolerance = 0.01;
+}
+function genPercent() {
+  const oldVal = rand(20, 200), changePct = rand(-40, 60);
+  const newVal = Math.round(oldVal * (1 + changePct / 100));
+  document.getElementById('questionText').textContent = "A product's price changed from $" + oldVal + ' to $' + newVal + '. What is the percent change (rounded to 1 decimal)?';
+  document.getElementById('hintText').textContent = 'Percent change = (new - old) / old x 100.';
+  currentAnswer = Math.round(((newVal - oldVal) / oldVal * 100) * 10) / 10; tolerance = 0.3;
+}
+function newQuestion() {
+  const fb = document.getElementById('feedback');
+  fb.className = 'feedback'; fb.textContent = '';
+  document.getElementById('answerInput').value = '';
+  document.getElementById('topicTitle').textContent = topicTitles[currentTopic];
+  if (currentTopic === 'linear') genLinear(); else if (currentTopic === 'slope') genSlope(); else genPercent();
+  document.getElementById('answerInput').focus();
+}
+function checkAnswer() {
+  const val = parseFloat(document.getElementById('answerInput').value);
+  const fb = document.getElementById('feedback');
+  if (isNaN(val)) { fb.className = 'feedback incorrect'; fb.textContent = 'Please enter a number.'; return; }
+  attempted++;
+  if (Math.abs(val - currentAnswer) <= tolerance) { correct++; fb.className = 'feedback correct'; fb.textContent = 'Correct! Nice work.'; }
+  else { fb.className = 'feedback incorrect'; fb.textContent = 'Not quite. The correct answer was ' + currentAnswer + '.'; }
+  document.getElementById('correctCount').textContent = correct;
+  document.getElementById('attemptCount').textContent = attempted;
+  document.getElementById('accuracy').textContent = attempted ? Math.round((correct / attempted) * 100) + '%' : '0%';
+}
+document.querySelectorAll('.tab-btn').forEach(function(btn) {
+  btn.addEventListener('click', function() {
+    document.querySelectorAll('.tab-btn').forEach(function(b) { b.classList.remove('active'); });
+    btn.classList.add('active'); currentTopic = btn.dataset.topic; newQuestion();
+  });
+});
+document.getElementById('checkBtn').addEventListener('click', checkAnswer);
+document.getElementById('nextBtn').addEventListener('click', newQuestion);
+document.getElementById('answerInput').addEventListener('keydown', function(e) { if (e.key === 'Enter') checkAnswer(); });
+newQuestion();
+</script>
+</body>
+</html>
